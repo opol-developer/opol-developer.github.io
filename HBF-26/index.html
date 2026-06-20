@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhiệm Vụ Đặc Biệt: Sinh Nhật Ba!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="nhac-nen.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="game-container">
+        <div class="hud">
+            <h2 id="instruction">Ba ơi, hãy chạm vào 5 hộp quà 🎁 để mở nhạc và nhận quà nhé!</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+            <div id="score-text">Đã thu thập: 0/5</div>
+        </div>
+    </div>
+
+    <div id="reward-screen">
+        <h1>CHÚC MỪNG CHIẾN THẮNG! 🏆</h1>
+        <div class="cake-icon">🎂</div>
+        <h2>Chúc Mừng Sinh Nhật Ba Yêu!</h2>
+        <br>
+        <div class="letter-box">
+            <p>🍀 <b>Nhiệm vụ hoàn thành xuất sắc!</b> Con chúc ba tuổi mới luôn dồi dào sức khỏe, ngập tràn niềm vui và luôn là chỗ dựa vững chắc của gia đình mình.</p>
+            <p>❤️ Cảm ơn ba vì tất cả những vất vả, hy sinh thầm lặng để nuôi dạy tụi con nên người. Cả nhà yêu ba nhiều lắm ạ!</p>
+        </div>
+        <button class="btn-replay" onclick="resetGame()">Chơi Lại 🔄</button>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>
