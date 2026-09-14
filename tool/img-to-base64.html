@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Images to Base64 (Clean & Optimize)</title>
+    <style>
+        :root {
+            --bg-color: #EFEDE3;
+            --card-bg: #302F2C;
+            --text-light: #EFEDE3;
+            --text-dark: #302F2C;
+            --accent: #D96B27;
+            --accent-hover: #BF5A1D;
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            color: var(--text-light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 24px;
+        }
+
+        .drop-area {
+            border: 2px dashed rgba(239, 237, 227, 0.4);
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.03);
+            margin-bottom: 20px;
+        }
+
+        .drop-area:hover, .drop-area.highlight {
+            border-color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .drop-area p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .btn-select {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--text-light);
+            color: var(--text-dark);
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: 20px;
+            border-top: 1px solid rgba(239, 237, 227, 0.2);
+            padding-top: 20px;
+        }
+
+        .preview-box {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preview-img {
+            max-width: 150px;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid rgba(239, 237, 227, 0.2);
+            background-color: #000;
+        }
+
+        .img-info {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 130px;
+        }
+
+        .control-group input[type="range"] {
+            flex: 1;
+        }
+
+        .output-group {
+            margin-bottom: 15px;
+        }
+
+        .output-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            opacity: 0.9;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(239, 237, 227, 0.2);
+            color: var(--text-light);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-copy {
+            background-color: var(--text-light);
+            color: var(--text-dark);
+        }
+
+        .btn-copy:hover {
+            opacity: 0.9;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Chuyển Đổi Ảnh Sang Base64 (Đã Nén & Lọc)</h1>
+        <p class="subtitle">Tự động xóa Metadata / EXIF và tối ưu dung lượng chuỗi Base64</p>
+
+        <div class="drop-area" id="drop-area">
+            <p>Kéo & thả ảnh vào đây hoặc</p>
+            <label for="file-input" class="btn-select">Chọn tệp ảnh</label>
+            <input type="file" id="file-input" accept="image/*">
+        </div>
+
+        <div class="preview-section" id="preview-section">
+            <div class="preview-box">
+                <img id="preview-img" class="preview-img" src="" alt="Preview">
+                <div class="img-info">
+                    <p><strong>Tên file:</strong> <span id="info-name">-</span></p>
+                    <p><strong>Định dạng xuất:</strong> <span id="info-type">image/webp (Clean)</span></p>
+                    <p><strong>Dung lượng gốc:</strong> <span id="info-original-size">-</span></p>
+                    <p><strong>Dung lượng tối ưu:</strong> <span id="info-size">-</span></p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="quality-slider">Chất lượng nén: <span id="quality-val">65%</span></label>
+                    <input type="range" id="quality-slider" min="0.1" max="1" step="0.05" value="0.65">
+                </div>
+                <div class="control-group">
+                    <label for="size-slider">Chiều rộng tối đa: <span id="size-val">1200px</span></label>
+                    <input type="range" id="size-slider" min="400" max="2500" step="100" value="1200">
+                </div>
+            </div>
+
+            <div class="output-group">
+                <label for="base64-output">Chuỗi Base64 sạch (Đã xóa Metadata/EXIF):</label>
+                <textarea id="base64-output" readonly placeholder="Mã Base64 sẽ xuất hiện ở đây..."></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-copy" id="btn-copy">Sao Chép Chuỗi Base64</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Đã sao chép vào bộ nhớ tạm!</div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const previewSection = document.getElementById('preview-section');
+        const previewImg = document.getElementById('preview-img');
+        const infoName = document.getElementById('info-name');
+        const infoType = document.getElementById('info-type');
+        const infoOriginalSize = document.getElementById('info-original-size');
+        const infoSize = document.getElementById('info-size');
+        const base64Output = document.getElementById('base64-output');
+        const btnCopy = document.getElementById('btn-copy');
+        const toast = document.getElementById('toast');
+
+        const qualitySlider = document.getElementById('quality-slider');
+        const qualityVal = document.getElementById('quality-val');
+        const sizeSlider = document.getElementById('size-slider');
+        const sizeVal = document.getElementById('size-val');
+
+        let currentFile = null;
+
+        // Event drag & drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt.files.length > 0) {
+                currentFile = dt.files[0];
+                processImage();
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentFile = e.target.files[0];
+                processImage();
+            }
+        });
+
+        // Tự động xử lý lại khi thay đổi slider
+        qualitySlider.addEventListener('input', (e) => {
+            qualityVal.textContent = Math.round(e.target.value * 100) + '%';
+            if (currentFile) processImage();
+        });
+
+        sizeSlider.addEventListener('input', (e) => {
+            sizeVal.textContent = e.target.value + 'px';
+            if (currentFile) processImage();
+        });
+
+        function processImage() {
+            if (!currentFile || !currentFile.type.startsWith('image/')) {
+                alert('Vui lòng chọn tệp định dạng hình ảnh!');
+                return;
+            }
+
+            infoName.textContent = currentFile.name;
+            infoOriginalSize.textContent = (currentFile.size / 1024).toFixed(2) + ' KB';
+
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(currentFile);
+
+            img.onload = function () {
+                const maxDim = parseInt(sizeSlider.value);
+                let width = img.width;
+                let height = img.height;
+
+                // Tính tỉ lệ Resize
+                if (width > height) {
+                    if (width > maxDim) {
+                        height = Math.round(height * (maxDim / width));
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width = Math.round(width * (maxDim / height));
+                        height = maxDim;
+                    }
+                }
+
+                // Vẽ lên Canvas (Loại bỏ toàn bộ EXIF/Metadata)
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Xuất chuỗi Base64 nén định dạng WebP
+                const quality = parseFloat(qualitySlider.value);
+                const cleanBase64 = canvas.toDataURL('image/webp', quality);
+
+                // Cập nhật giao diện
+                previewImg.src = cleanBase64;
+                base64Output.value = cleanBase64;
+                
+                const approxSize = Math.round((cleanBase64.length * 3 / 4) / 1024);
+                infoSize.textContent = `~${approxSize} KB (${width}x${height}px)`;
+
+                previewSection.style.display = 'block';
+                URL.revokeObjectURL(objectUrl);
+            };
+
+            img.src = objectUrl;
+        }
+
+        btnCopy.addEventListener('click', () => {
+            if (!base64Output.value) return;
+            
+            base64Output.select();
+            navigator.clipboard.writeText(base64Output.value).then(() => {
+                showToast('Đã sao chép vào bộ nhớ tạm!');
+            }).catch(() => {
+                document.execCommand('copy');
+                showToast('Đã sao chép vào bộ nhớ tạm!');
+            });
+        });
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+    </script>
+</body>
+  </html>
