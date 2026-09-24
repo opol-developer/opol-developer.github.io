@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>info_box :: Builder</title>
+    <style>
+        :root {
+            --bg: #E3DFD5;
+            --card: #F5F3EF;
+            --border: #25281C;
+            --text: #25281C;
+            --muted: #626558;
+            --radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 4px 4px 0px var(--border);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .sub {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .icon-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0px var(--border);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .icon-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: none;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.825rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="file"], input[type="password"], input[type="text"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        textarea {
+            font-family: monospace;
+            font-size: 0.8rem;
+            height: 100px;
+            resize: vertical;
+            white-space: pre;
+            word-break: break-all;
+            overflow-y: auto;
+        }
+
+        input:focus, textarea:focus {
+            box-shadow: 0 0 0 2px var(--border);
+        }
+
+        .file-list {
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 8px 12px;
+            background: var(--bg);
+            font-size: 0.85rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dotted var(--muted);
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button.main-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--border);
+            color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        button.secondary {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #status {
+            margin-top: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Modal Overlay & Card */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(37, 40, 28, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 6px 6px 0px var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text);
+            padding: 0 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">📦</span>
+            <div>
+                <h1>info_box</h1>
+                <div class="sub">HTML Container Packaging</div>
+            </div>
+        </div>
+        <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    </div>
+
+    <!-- Main Build Fields -->
+    <div class="field">
+        <label>Output File Name</label>
+        <input type="text" id="output-filename" placeholder="info_box_export.html">
+    </div>
+
+    <div class="field">
+        <label>Attached Files</label>
+        <input type="file" id="file-input" multiple onchange="updateFileList()">
+        <div id="file-list" class="file-list">No files selected...</div>
+    </div>
+
+    <div class="field">
+        <label>Primary Password (Pass 1)</label>
+        <input type="password" id="pass1" placeholder="••••••••">
+    </div>
+
+    <div class="field">
+        <label>Recovery Password (Pass 2)</label>
+        <input type="password" id="pass2" placeholder="••••••••">
+    </div>
+
+    <button class="main-btn" onclick="buildContainer()">BUILD INFO_BOX</button>
+
+    <div id="output-actions" class="field hidden" style="margin-top: 24px;">
+        <label>Export Options</label>
+        
+        <textarea id="html-output" readonly placeholder="HTML Code..."></textarea>
+        
+        <div class="btn-grid">
+            <button class="secondary" onclick="copyHtml()">📋 COPY HTML</button>
+            <button class="secondary" onclick="downloadContainer()">💾 DOWNLOAD .HTML</button>
+            <button class="secondary" onclick="shareContainer()">🔗 SHARE FILE</button>
+            <button class="secondary" onclick="sendToTelegram()">✈️ SEND TELEGRAM</button>
+        </div>
+    </div>
+
+    <div id="status"></div>
+</div>
+
+<!-- Modal Settings -->
+<div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title">⚙️ Settings</div>
+            <button class="close-btn" onclick="closeSettings()">✕</button>
+        </div>
+
+        <div class="field">
+            <label>Telegram Bot Token</label>
+            <input type="text" id="tg-token" placeholder="123456789:ABCdef..." oninput="saveSettings()">
+        </div>
+
+        <div class="field">
+            <label>Telegram Chat ID</label>
+            <input type="text" id="tg-chatid" placeholder="-100123456789 or User ID" oninput="saveSettings()">
+        </div>
+
+        <div class="field">
+            <label>Signature Text (Output Footer Note)</label>
+            <input type="text" id="signature-text" placeholder="e.g. Created by PolDev | Confidential" oninput="saveSettings()">
+        </div>
+
+        <button class="main-btn" onclick="closeSettings()">DONE</button>
+    </div>
+</div>
+
+<script>
+let selectedFiles = [];
+let generatedHtmlString = "";
+let generatedBlob = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('output-filename').value = `info_box_${Date.now()}.html`;
+    loadSettings();
+});
+
+function openSettings() {
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+
+function closeSettings() {
+    document.getElementById('settings-modal').classList.add('hidden');
+}
+
+function saveSettings() {
+    localStorage.setItem('infobox_tg_token', document.getElementById('tg-token').value.trim());
+    localStorage.setItem('infobox_tg_chatid', document.getElementById('tg-chatid').value.trim());
+    localStorage.setItem('infobox_signature', document.getElementById('signature-text').value);
+}
+
+function loadSettings() {
+    const savedToken = localStorage.getItem('infobox_tg_token');
+    const savedChatId = localStorage.getItem('infobox_tg_chatid');
+    const savedSignature = localStorage.getItem('infobox_signature');
+
+    if (savedToken) document.getElementById('tg-token').value = savedToken;
+    if (savedChatId) document.getElementById('tg-chatid').value = savedChatId;
+    if (savedSignature) document.getElementById('signature-text').value = savedSignature;
+}
+
+function getCustomFileName() {
+    let name = document.getElementById('output-filename').value.trim();
+    if (!name) name = `info_box_${Date.now()}.html`;
+    if (!name.endsWith('.html') && !name.endsWith('.htm')) name += '.html';
+    return name;
+}
+
+function updateFileList() {
+    const input = document.getElementById('file-input');
+    selectedFiles = Array.from(input.files);
+    const listEl = document.getElementById('file-list');
+    
+    if (selectedFiles.length === 0) {
+        listEl.innerHTML = 'No files selected...';
+        return;
+    }
+    
+    listEl.innerHTML = selectedFiles.map(f => `
+        <div class="file-item">
+            <span>📄 ${f.name}</span>
+            <span style="color:var(--muted)">${(f.size / 1024).toFixed(1)} KB</span>
+        </div>
+    `).join('');
+}
+
+function bin2str(buf) {
+    let str = '';
+    const bytes = new Uint8Array(buf);
+    const chunk = 8192;
+    for (let i = 0; i < bytes.length; i += chunk) {
+        str += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return str;
+}
+
+async function deriveKeyFromPassword(password, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+    return await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function buildContainer() {
+    const p1 = document.getElementById('pass1').value;
+    const p2 = document.getElementById('pass2').value;
+    const signature = document.getElementById('signature-text').value;
+    const statusEl = document.getElementById('status');
+
+    if (selectedFiles.length === 0) {
+        alert('Please select at least one file!');
+        return;
+    }
+    if (!p1 || !p2) {
+        alert('Please enter both passwords!');
+        return;
+    }
+
+    statusEl.textContent = 'Packaging & Encrypting...';
+
+    try {
+        const fileDataArray = [];
+        for (const file of selectedFiles) {
+            const buffer = await file.arrayBuffer();
+            fileDataArray.push({
+                name: file.name,
+                mime: file.type || 'application/octet-stream',
+                data: Array.from(new Uint8Array(buffer))
+            });
+        }
+
+        const jsonStr = JSON.stringify(fileDataArray);
+        const payloadBytes = new TextEncoder().encode(jsonStr);
+
+        const masterKey = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+        const exportedMasterKey = await crypto.subtle.exportKey("raw", masterKey);
+
+        const salt1 = crypto.getRandomValues(new Uint8Array(16));
+        const iv1 = crypto.getRandomValues(new Uint8Array(12));
+        const salt2 = crypto.getRandomValues(new Uint8Array(16));
+        const iv2 = crypto.getRandomValues(new Uint8Array(12));
+        const payloadIv = crypto.getRandomValues(new Uint8Array(12));
+
+        const key1 = await deriveKeyFromPassword(p1, salt1);
+        const encMasterKey1 = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv1 }, key1, exportedMasterKey);
+
+        const key2 = await deriveKeyFromPassword(p2, salt2);
+        const encMasterKey2 = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv2 }, key2, exportedMasterKey);
+
+        const encPayload = await crypto.subtle.encrypt({ name: "AES-GCM", iv: payloadIv }, masterKey, payloadBytes);
+
+        const packageObj = {
+            s1: Array.from(salt1), iv1: Array.from(iv1), mk1: Array.from(new Uint8Array(encMasterKey1)),
+            s2: Array.from(salt2), iv2: Array.from(iv2), mk2: Array.from(new Uint8Array(encMasterKey2)),
+            pIv: Array.from(payloadIv),
+            data: Array.from(new Uint8Array(encPayload))
+        };
+
+        const finalBytes = new TextEncoder().encode(JSON.stringify(packageObj));
+        const binaryPayloadString = bin2str(finalBytes);
+        const fileName = getCustomFileName();
+
+        generatedHtmlString = generateOutputTemplate(binaryPayloadString, fileName, signature);
+        generatedBlob = new Blob([generatedHtmlString], { type: 'text/html;charset=utf-8' });
+
+        document.getElementById('html-output').value = generatedHtmlString;
+        document.getElementById('output-actions').classList.remove('hidden');
+        statusEl.textContent = '✅ Container generated successfully!';
+    } catch (err) {
+        console.error(err);
+        statusEl.textContent = '❌ Failed to encrypt data!';
+    }
+}
+
+// COPY HTML CODE
+async function copyHtml() {
+    const textarea = document.getElementById('html-output');
+    if (!textarea.value) return;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textarea.value);
+            alert('HTML Code copied to clipboard!');
+            return;
+        }
+    } catch (err) {}
+
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, 9999999);
+
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            alert('HTML Code copied to clipboard!');
+        } else {
+            alert('Copy blocked by browser. Press Ctrl+C (Cmd+C) to copy manually.');
+        }
+    } catch (err) {
+        alert('Copy blocked by browser. Press Ctrl+C (Cmd+C) to copy manually.');
+    }
+}
+
+// DOWNLOAD FILE
+function downloadContainer() {
+    if (!generatedBlob) return;
+    const fileName = getCustomFileName();
+    const url = URL.createObjectURL(generatedBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// SHARE FILE
+async function shareContainer() {
+    if (!generatedBlob) return;
+
+    const fileName = getCustomFileName();
+    const file = new File([generatedBlob], fileName, { type: 'text/html' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({
+                files: [file],
+                title: fileName,
+                text: 'info_box Encrypted HTML Container'
+            });
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                alert('Share failed, downloading file instead.');
+                downloadContainer();
+            }
+        }
+    } else {
+        alert('Web Share API is not supported on this browser. Downloading file instead...');
+        downloadContainer();
+    }
+}
+
+// SEND TO TELEGRAM
+async function sendToTelegram() {
+    const token = document.getElementById('tg-token').value.trim();
+    const chatId = document.getElementById('tg-chatid').value.trim();
+    const statusEl = document.getElementById('status');
+
+    if (!token || !chatId) {
+        alert('Please enter Telegram Bot Token and Chat ID in Settings!');
+        openSettings();
+        return;
+    }
+
+    if (!generatedBlob) return;
+
+    const fileName = getCustomFileName();
+    statusEl.textContent = 'Sending to Telegram...';
+
+    const formData = new FormData();
+    formData.append('chat_id', chatId);
+    formData.append('document', generatedBlob, fileName);
+    formData.append('caption', `📦 *info_box Container*\n📄 File: \`${fileName}\``);
+    formData.append('parse_mode', 'Markdown');
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const resData = await response.json();
+
+        if (resData.ok) {
+            statusEl.textContent = '✅ Successfully sent to Telegram!';
+            alert('File sent to Telegram successfully!');
+        } else {
+            statusEl.textContent = '❌ Telegram Error: ' + resData.description;
+            alert('Telegram Error: ' + resData.description);
+        }
+    } catch (err) {
+        console.error(err);
+        statusEl.textContent = '❌ Failed to connect to Telegram API!';
+        alert('Failed to connect to Telegram API!');
+    }
+}
+
+function generateOutputTemplate(payload, containerName, signature) {
+    const signatureHtml = signature.trim() 
+        ? `<div class="footer-note">${signature.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>` 
+        : '';
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${containerName}</title>
+    <style>
+        :root {
+            --bg: #E3DFD5;
+            --card: #F5F3EF;
+            --border: #25281C;
+            --text: #25281C;
+            --muted: #626558;
+            --radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .header-icon { font-size: 1.4rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .container-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin: 8px 0 12px 0;
+            word-break: break-all;
+            background: var(--bg);
+            padding: 8px 10px;
+            border-radius: var(--radius);
+            border: 1px dashed var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        input[type="password"]:focus {
+            box-shadow: 0 0 0 2px var(--border);
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: var(--border);
+            color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translate(1px, 1px);
+            box-shadow: none;
+        }
+
+        .hidden { display: none; }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.85rem;
+        }
+
+        .file-item:last-child { border-bottom: none; }
+
+        a {
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        a:hover { opacity: 0.8; }
+
+        .footer-note {
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px dotted var(--muted);
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-align: center;
+            word-break: break-word;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div id="auth-box">
+        <div class="header">
+            <span class="header-icon">🔒</span>
+            <h2>info_box</h2>
+        </div>
+        
+        <div class="container-title">
+            <span>🏷️</span>
+            <span>${containerName}</span>
+        </div>
+
+        <input type="password" id="pass-input" placeholder="Access password...">
+        <button onclick="unlock()">UNLOCK CONTAINER</button>
+    </div>
+
+    <div id="content-box" class="hidden">
+        <div class="header">
+            <span class="header-icon">📂</span>
+            <h2>info_box :: Files</h2>
+        </div>
+        <div id="file-list"></div>
+    </div>
+
+    ${signatureHtml}
+</div>
+
+<script id="payload" type="text/plain">${payload}<\/script>
+
+<script>
+function str2bin(str) {
+    const buf = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) buf[i] = str.charCodeAt(i) & 0xff;
+    return buf;
+}
+
+async function deriveKeyFromPassword(password, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+    return await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"]
+    );
+}
+
+async function unlock() {
+    const pass = document.getElementById('pass-input').value;
+    const rawStr = document.getElementById('payload').textContent;
+    
+    try {
+        const fullBytes = str2bin(rawStr);
+        const pkg = JSON.parse(new TextDecoder().decode(fullBytes));
+        let rawMasterKey = null;
+
+        try {
+            const k1 = await deriveKeyFromPassword(pass, new Uint8Array(pkg.s1));
+            rawMasterKey = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(pkg.iv1) }, k1, new Uint8Array(pkg.mk1));
+        } catch (e1) {
+            try {
+                const k2 = await deriveKeyFromPassword(pass, new Uint8Array(pkg.s2));
+                rawMasterKey = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(pkg.iv2) }, k2, new Uint8Array(pkg.mk2));
+            } catch (e2) {}
+        }
+
+        if (!rawMasterKey) {
+            alert('Incorrect password!');
+            return;
+        }
+
+        const masterKey = await crypto.subtle.importKey("raw", rawMasterKey, { name: "AES-GCM" }, false, ["decrypt"]);
+
+        const decryptedBuffer = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: new Uint8Array(pkg.pIv) },
+            masterKey,
+            new Uint8Array(pkg.data)
+        );
+
+        const files = JSON.parse(new TextDecoder().decode(decryptedBuffer));
+        const listEl = document.getElementById('file-list');
+        listEl.innerHTML = '';
+
+        files.forEach(f => {
+            const blob = new Blob([new Uint8Array(f.data)], { type: f.mime });
+            const url = URL.createObjectURL(blob);
+            listEl.innerHTML += \`
+                <div class="file-item">
+                    <span>📄 \${f.name}</span>
+                    <a href="\${url}" download="\${f.name}">Download</a>
+                </div>
+            \`;
+        });
+
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('content-box').classList.remove('hidden');
+    } catch (e) {
+        alert('Failed to decrypt container!');
+    }
+}
+<\/script>
+</body>
+</html>`;
+}
+</script>
+</body>
+</html>
