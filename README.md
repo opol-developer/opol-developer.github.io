@@ -1,3 +1,4 @@
 ﻿# opol-developer.github.io
-opol-developer.github.io/tool/img-to-base64.html
-opol-developer.github.io/tool/info_box.html
+Đây là trang giới thiệu của dự án The Api Project được tạo tạo ra và khai thác nhằm mục đích nghiên cứu, học tập phi lợi nhuận.
+Dự án không nhằm mục đích thương mại.
+Được duy trì bởi SocpolSatuday và Pol Dev
