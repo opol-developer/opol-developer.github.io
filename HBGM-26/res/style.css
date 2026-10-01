@@ -1,0 +1,370 @@
+/* PALETTE: Black Cherry (#5D0703) & Cream Vanilla (#EEDCC8) */
+:root {
+    --black-cherry: #5D0703;
+    --black-cherry-dark: #3D0402; /* Màu chữ đậm tương phản cao */
+    --black-cherry-light: #7A0A04;
+    --cream-vanilla: #EEDCC8;
+    --cream-light: #FAF2E8;
+    --gold-accent: #A88138;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--black-cherry);
+    color: var(--black-cherry-dark);
+    font-family: 'Playfair Display', Georgia, serif;
+    padding: 21px !important;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Material Symbols Adjustments */
+.material-symbols-outlined {
+    font-size: 22px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.main-card {
+    width: 100%;
+    max-width: 680px;
+    background-color: var(--cream-vanilla);
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    border: 2px solid var(--gold-accent);
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+    border-bottom: 2px solid rgba(93, 7, 3, 0.25);
+    padding-bottom: 15px;
+}
+
+.script-title {
+    font-family: 'Great Vibes', 'Dancing Script', cursive;
+    font-size: 3.6rem;
+    color: var(--black-cherry);
+    line-height: 1.1;
+    font-weight: bold;
+    text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black-cherry-dark);
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+/* TURNTABLE */
+.turntable-section {
+    margin-bottom: 30px;
+}
+
+.player-container {
+    background-color: var(--cream-light);
+    border: 1.5px solid rgba(93, 7, 3, 0.3);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    box-shadow: inset 0 0 12px rgba(93, 7, 3, 0.08);
+}
+
+.platter-area {
+    width: 220px;
+    height: 220px;
+    background: #2B0301;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 6px solid var(--black-cherry);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    cursor: pointer;
+}
+
+/* RECORD */
+.record {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, #2a0302 30%, #150101 70%);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.record.spinning {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.record-grooves {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: repeating-radial-gradient(
+        circle,
+        transparent,
+        transparent 3px,
+        rgba(238, 220, 200, 0.08) 4px,
+        transparent 5px
+    );
+}
+
+.record-label {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--black-cherry);
+    border: 3px solid var(--gold-accent);
+    background-size: cover;
+    background-position: center;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--cream-vanilla);
+    overflow: hidden;
+}
+
+.music-note-icon {
+    font-size: 32px;
+}
+
+.center-hole {
+    width: 12px;
+    height: 12px;
+    background-color: var(--cream-vanilla);
+    border-radius: 50%;
+    position: absolute;
+    z-index: 3;
+    border: 1px solid var(--black-cherry);
+}
+
+/* TONEARM */
+.tonearm-assembly {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 70px;
+    height: 140px;
+    pointer-events: none;
+    z-index: 10;
+    transform-origin: 50px 20px;
+    transform: rotate(-28deg);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tonearm-assembly.playing {
+    transform: rotate(0deg);
+}
+
+.tonearm-base {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    background: var(--black-cherry);
+    border: 2px solid var(--gold-accent);
+    border-radius: 50%;
+}
+
+.tonearm-arm {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+    width: 6px;
+    height: 90px;
+    background: linear-gradient(to right, #888, #ccc, #666);
+    border-radius: 3px;
+}
+
+.tonearm-cartridge {
+    position: absolute;
+    right: 15px;
+    top: 110px;
+    width: 16px;
+    height: 24px;
+    background: var(--black-cherry);
+    border: 1px solid var(--gold-accent);
+    border-radius: 2px;
+}
+
+/* CONTROLS */
+.controls-bar {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.song-info {
+    text-align: center;
+}
+
+.song-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--black-cherry-dark);
+}
+
+.song-artist {
+    font-size: 0.95rem;
+    color: var(--black-cherry-light);
+    font-style: italic;
+    font-weight: 600;
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn {
+    background-color: var(--black-cherry);
+    color: var(--cream-vanilla);
+    border: 1.5px solid var(--gold-accent);
+    padding: 10px 18px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    background-color: var(--black-cherry-light);
+    transform: translateY(-2px);
+}
+
+.btn-play {
+    padding: 12px 26px;
+    font-size: 1.05rem;
+}
+
+/* LETTER SECTION - CẢI TIẾN RÕ NÉT */
+.letter-section {
+    background-color: transparent;
+    border-top: 2px dashed rgba(93, 7, 3, 0.35);
+    padding-top: 28px;
+    margin-top: 15px;
+}
+
+.letter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    color: var(--black-cherry-dark);
+}
+
+.stamp-icon {
+    font-size: 24px;
+}
+
+.letter-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.letter-body {
+    font-size: 1.25rem; /* Tăng cỡ chữ lên rõ nét */
+    line-height: 2;
+    color: var(--black-cherry-dark);
+    font-weight: 500;
+}
+
+/* Định dạng gạch chân <u> đẹp và không che chữ */
+.letter-body u {
+    text-decoration: underline;
+    text-decoration-color: var(--black-cherry);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 5px; /* Giúp nét gạch cách chân chữ, dễ đọc hơn */
+}
+
+.letter-body h1, 
+.letter-body h2, 
+.letter-body h3, 
+.letter-body h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--black-cherry);
+    margin: 20px 0 12px 0;
+    font-weight: 700;
+}
+
+.letter-body h1 { font-size: 2.2rem; border-bottom: 1px solid rgba(93,7,3,0.2); padding-bottom: 5px; }
+.letter-body h2 { font-size: 1.8rem; }
+.letter-body h3 { font-size: 1.5rem; }
+.letter-body h4 { font-size: 1.3rem; }
+
+.letter-body p {
+    margin-bottom: 18px;
+}
+
+/* Không xài filter cho img/video */
+.letter-body img,
+.letter-body video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 16px 0;
+    border: 2px solid rgba(93, 7, 3, 0.25);
+    filter: none !important;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    margin-top: 35px;
+    padding-top: 20px;
+    border-top: 1.5px solid rgba(93, 7, 3, 0.2);
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--black-cherry-dark);
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+    .script-title { font-size: 2.8rem; }
+    .letter-body { font-size: 1.15rem; }
+    .platter-area { width: 180px; height: 180px; }
+    .record { width: 160px; height: 160px; }
+    .record-label { width: 65px; height: 65px; }
+    .tonearm-assembly { transform-origin: 40px 15px; scale: 0.85; }
+}
